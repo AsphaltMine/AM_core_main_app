@@ -1,29 +1,32 @@
-<div class="row">
-    <div class="col-md-12 form-login">
-        <h2>Login</h2>
+{% load static %}
+<div class="am-login-wrap am-login-page">
+    <div class="am-login-card">
+        <img src="{% static 'img/favicon.png' %}" alt="AsphaltMine" class="am-login-logo">
+        <h2 class="am-login-title">Login</h2>
+        <p class="am-login-subtitle">Sign in to AsphaltMine</p>
 
         {% if data.login_error %}
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> Invalid username and/or password. Please try again or
-            contact an administrator for any assistance.
+            write to <a href="mailto:contact@asphaltmine.org">contact@asphaltmine.org</a> for assistance.
         </div>
         {% endif %}
         {% if data.login_locked %}
         <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> Your username is not activated yet. Please check back soon or
-            contact an administrator for any assistance.
+            <i class="fas fa-info-circle"></i> Your email address is still unverified.
+            {% if data.with_website_features %}
+            <br><a href="{% url 'core_website_app_resend_verification' %}">Resend the verification email</a>
+            {% endif %}
         </div>
         {% endif %}
 
-        <form method="post" action="{% url 'core_main_app_login' %}" class="form-horizontal">
+        <form method="post" action="{% url 'core_main_app_login' %}" class="am-login-form">
             {% csrf_token %}
 
             {% for field in data.login_form.visible_fields %}
-            <div class="form-group">
+            <div class="am-login-field">
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                <div>
-                    {{ field }}
-                </div>
+                {{ field }}
             </div>
             {% endfor %}
 
@@ -31,28 +34,21 @@
                 {{ field }}
             {% endfor %}
 
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                    {% if data.with_website_features %}
-                        <a class="btn btn-secondary btn-lg request account"
-                           href="{% url 'core_website_app_account_request' %}">
-                            <i class="fas fa-user-plus"></i> Request an Account
-                        </a>
-                    {% endif %}
-                    {% if not data.ENABLE_SAML2_SSO_AUTH %}
-                        <a class="btn btn-secondary btn-lg" href="{% url 'password_reset' %}">
-                            <i class="fas fa-lock" aria-hidden="true"></i> Forgot password
-                        </a>
-                    {% endif %}
-                    </div>
-                    <div class="col-3">
-                        <button type="submit" class="btn btn-lg btn-primary {% if BOOTSTRAP_VERSION|first == "4" %}float-right{% elif BOOTSTRAP_VERSION|first == "5"  %}float-end{% endif %}">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </div>
-                </div>
+            <button type="submit" class="am-login-submit">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
 
+            <div class="am-login-links">
+                {% if data.with_website_features %}
+                    <a href="{% url 'core_website_app_account_request' %}">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                {% endif %}
+                {% if not data.ENABLE_SAML2_SSO_AUTH %}
+                    <a href="{% url 'password_reset' %}">
+                        <i class="fas fa-lock" aria-hidden="true"></i> Forgot password
+                    </a>
+                {% endif %}
             </div>
         </form>
     </div>

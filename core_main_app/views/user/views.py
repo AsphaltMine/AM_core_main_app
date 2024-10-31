@@ -2,7 +2,9 @@
 """
 from django.conf import settings
 from django.contrib import auth as django_auth
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.staticfiles import finders
 from django.http.response import HttpResponse
 from django.shortcuts import redirect
@@ -80,12 +82,15 @@ def default_custom_login(request):
         username = request.POST["username"]
         password = request.POST["password"]
         next_page = request.POST["next_page"]
+        assets = {"css": ["core_main_app/user/css/login.css"]}
 
         try:
-            user = django_auth.authenticate(
-                username=username, password=password
-            )
-            if not user.is_active:
+            inactive_user = User.objects.filter(
+                username=username, is_active=False
+            ).first()
+            if inactive_user is not None and inactive_user.check_password(
+                password
+            ):
                 context.update(
                     {
                         "login_form": LoginForm(
@@ -98,8 +103,12 @@ def default_custom_login(request):
                     request,
                     "core_main_app/user/login/main.html",
                     context=context,
+                    assets=assets,
                 )
 
+            user = django_auth.authenticate(
+                username=username, password=password
+            )
             django_auth.login(request, user)
 
             return _login_redirect(next_page)
@@ -114,6 +123,7 @@ def default_custom_login(request):
                 request,
                 "core_main_app/user/login/main.html",
                 context=context,
+                assets=assets,
             )
     elif request.method == "GET":
         if request.user.is_authenticated:
@@ -179,6 +189,69 @@ def custom_logout(request):
     """
     django_auth.logout(request)
     return redirect(reverse("core_main_app_homepage"))
+
+
+def _password_reset_assets():
+    return {"css": ["core_main_app/user/css/login.css"]}
+
+
+class PasswordResetView(auth_views.PasswordResetView):
+    """Password reset request page, styled to match the rest of the site."""
+
+    email_template_name = (
+        "core_main_app/user/registration/password_reset_email.html"
+    )
+    subject_template_name = (
+        "core_main_app/user/registration/password_reset_subject.txt"
+    )
+
+    def render_to_response(self, context, **kwargs):
+        return render(
+            self.request,
+            "core_main_app/user/registration/password_reset_form.html",
+            context={"title": "Forgot password", "form": context["form"]},
+            assets=_password_reset_assets(),
+        )
+
+
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    """Confirmation page shown after requesting a password reset email."""
+
+    def render_to_response(self, context, **kwargs):
+        return render(
+            self.request,
+            "core_main_app/user/registration/password_reset_done.html",
+            context={"title": "Check your email"},
+            assets=_password_reset_assets(),
+        )
+
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    """Set-new-password page reached from the emailed reset link."""
+
+    def render_to_response(self, context, **kwargs):
+        return render(
+            self.request,
+            "core_main_app/user/registration/password_reset_confirm.html",
+            context={
+                "title": "Set new password",
+                "form": context.get("form"),
+                "validlink": context.get("validlink"),
+            },
+            assets=_password_reset_assets(),
+        )
+
+
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    """Final confirmation page after a successful password reset."""
+
+    def render_to_response(self, context, **kwargs):
+        return render(
+            self.request,
+            "core_main_app/user/registration/password_reset_complete.html",
+            context={"title": "Password reset complete"},
+            assets=_password_reset_assets(),
+        )
 
 
 def homepage(request):

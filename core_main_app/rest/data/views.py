@@ -3,9 +3,15 @@
 import json
 import logging
 import os
+import requests
 
+from django.utils.decorators import method_decorator
+
+from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404
+from django.http import JsonResponse
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import (
@@ -601,6 +607,46 @@ class DataDownload(APIView):
             return Response(
                 content, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class DataLoad(APIView):
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_object(self, pk):
+        try:
+            return Data.objects.get(pk=pk)
+        except Data.DoesNotExist:
+            raise Http404
+
+    def post(self, request, pk):
+        try:
+            data_object = self.get_object(pk)
+            data_content = data_object.content
+            data_title = data_object.title
+            test_id = data_object.template_id
+
+            # Optionally format content if needed
+            data_content = format_content_xml(data_content)
+            
+            # Store the data in the session
+            request.session['data_id'] = pk
+            request.session['data_content'] = data_content
+            request.session['data_title'] = data_title
+            request.session['test_id'] = test_id
+
+            # Return JSON response with data
+            return JsonResponse({
+                'data_id': pk,
+                'data_content': data_content,
+                'data_title': data_title,
+                'test_id' : test_id
+            })
+
+        except Data.DoesNotExist:
+            return JsonResponse({'error': 'Data object not found.'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 
 class ExecuteLocalQueryView(AbstractExecuteLocalQueryView):

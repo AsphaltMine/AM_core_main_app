@@ -126,6 +126,7 @@ urlpatterns = [
         data_views.DataDownload.as_view(),
         name="core_main_app_rest_data_download",
     ),
+    re_path(r"^data/load/(?P<pk>\w+)/$", data_views.DataLoad.as_view(), name='core_main_app_rest_data_load'),
     re_path(
         r"^data/query/keyword/$",
         data_views.ExecuteLocalKeywordQueryView.as_view(),
@@ -260,6 +261,11 @@ urlpatterns = [
         r"^workspace/(?P<pk>\w+)/set_private/$",
         workspace_views.set_workspace_private,
         name="core_main_app_rest_workspace_set_private",
+    ),
+    re_path(
+        r"^workspace/(?P<pk>\w+)/set_title/$",
+        workspace_views.set_workspace_title,
+        name="core_main_app_rest_workspace_set_title",
     ),
     re_path(
         r"^workspace/(?P<pk>\w+)/list_user_can_read/$",

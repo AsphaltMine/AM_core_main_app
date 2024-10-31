@@ -5,6 +5,7 @@ import re
 
 from django.conf import settings
 
+from core_main_app.commons.constants import DATA_TEXT_FIELD
 from core_main_app.commons.exceptions import QueryError
 from core_main_app.utils.databases.backend import uses_postgresql_backend
 
@@ -39,7 +40,8 @@ def _add_sub_document_root(query, sub_document_root):
         if key == "$and" or key == "$or":
             for value in query[key]:
                 _add_sub_document_root(value, sub_document_root)
-        elif not key.startswith("$"):
+        elif not key.startswith("$") and key != DATA_TEXT_FIELD:
+            # DATA_TEXT_FIELD is a root field, it must not be prefixed
             query[f"{sub_document_root}.{key}"] = query.pop(key)
 
 

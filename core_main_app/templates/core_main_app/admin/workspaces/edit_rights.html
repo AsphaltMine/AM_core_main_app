@@ -1,7 +1,9 @@
 {% extends "core_main_app/_render/admin/theme/tools/section.html" %}
+{% load static %}
 
 {% block section_title %} Edit rights {% endblock %}
 
 {% block section_content %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     {% include 'core_main_app/user/workspaces/edit_rights.html' %}
 {% endblock %}

@@ -324,15 +324,9 @@ def update_mongo_data_workspace(data_ids, workspace_id):
 def delete_mongo_data(data_id):
     """Delete a data in MongoDB"""
     try:
-        try:
-            from core_main_app.components.mongo.models import MongoData
+        from core_main_app.components.mongo.models import MongoData
 
-            mongo_data = MongoData.objects.get(pk=data_id)
-            mongo_data.delete()
-        except Exception as exception:
-            logger.error(
-                f"ERROR : An error occurred while deleting data : {str(exception)}"
-            )
+        MongoData.objects.filter(pk=data_id).delete()
     except Exception as exception:
         logger.error(
             f"ERROR : An error occurred while deleting data : {str(exception)}"

@@ -4,8 +4,8 @@
 # Anonymous group
 ANONYMOUS_GROUP = "anonymous"
 
-# Default group
 DEFAULT_GROUP = "default"
+READ_ONLY_GROUP = "read_only"
 
 # API rights
 API_CONTENT_TYPE = "api"

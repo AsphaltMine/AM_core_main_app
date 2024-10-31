@@ -4,7 +4,7 @@
             {% if pagination.has_previous %}
                 <li class="page-item">
                     {% block previous_nav %}
-                        <span class="page-link" onclick="window.location='?page={{pagination.previous_page_number}}'">
+                        <span class="page-link" onclick="var p=new URLSearchParams(window.location.search); p.set('page', '{{pagination.previous_page_number}}'); window.location.search=p.toString();">
                             &laquo;
                         </span>
                     {% endblock %}
@@ -16,7 +16,7 @@
             {% if pagination.number|add:'-4' > 1 %}
                 <li class="page-item">
                     {% block fast_previous_nav %}
-                        <span class="page-link" onclick="window.location='?page={{ pagination.number|add:'-5' }}'">
+                        <span class="page-link" onclick="var p=new URLSearchParams(window.location.search); p.set('page', '{{ pagination.number|add:'-5' }}'); window.location.search=p.toString();">
                             &hellip;
                         </span>
                     {% endblock %}
@@ -32,7 +32,7 @@
                 {% elif forloop.counter > pagination.number|add:'-5' and forloop.counter < pagination.number|add:'5' %}
                     <li class="page-item">
                         {% block page_nav %}
-                            <span class="page-link" onclick="window.location='?page={{forloop.counter}}'">
+                            <span class="page-link" onclick="var p=new URLSearchParams(window.location.search); p.set('page', '{{forloop.counter}}'); window.location.search=p.toString();">
                                 {{forloop.counter}}
                             </span>
                         {% endblock %}
@@ -44,7 +44,7 @@
             {% if pagination.paginator.num_pages > pagination.number|add:'4' %}
                 <li class="page-item">
                     {% block fast_next_nav %}
-                        <span class="page-link" onclick="window.location='?page={{ pagination.number|add:'5' }}'">
+                        <span class="page-link" onclick="var p=new URLSearchParams(window.location.search); p.set('page', '{{ pagination.number|add:'5' }}'); window.location.search=p.toString();">
                             &hellip;
                         </span>
                     {% endblock %}
@@ -54,7 +54,7 @@
             {% if pagination.has_next %}
                 <li class="page-item">
                     {% block next_nav %}
-                        <span class="page-link" onclick="window.location='?page={{pagination.next_page_number}}'">
+                        <span class="page-link" onclick="var p=new URLSearchParams(window.location.search); p.set('page', '{{pagination.next_page_number}}'); window.location.search=p.toString();">
                             &raquo;
                         </span>
                     {% endblock %}

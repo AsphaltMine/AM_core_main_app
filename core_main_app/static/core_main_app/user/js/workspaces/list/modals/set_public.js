@@ -3,7 +3,7 @@
  */
 setPublicWorkspace = function() {
     $("#banner_set_public_errors").hide();
-    var $recordRow = $(this).parent().parent();
+    var $recordRow = $(this).closest('tr');
     $('.'+functional_object+'-id').val($recordRow.attr("objectid"));
     $("#public-workspace-modal").modal("show");
 };

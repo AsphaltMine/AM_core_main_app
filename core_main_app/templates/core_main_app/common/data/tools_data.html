@@ -1,3 +1,5 @@
+
+
 <div>
     <button id="btn-previous-page" type="button" class="btn btn-secondary mb-2 float-{% if BOOTSTRAP_VERSION|first == "4" %}right{% elif BOOTSTRAP_VERSION|first == "5"  %}end{% endif %}">
         <i class="fas fa-arrow-left"></i> Back to previous
@@ -8,6 +10,15 @@
         {% if BOOTSTRAP_VERSION|first == "4" %}mr-1{% elif BOOTSTRAP_VERSION|first == "5"  %}me-1{% endif %}">
         <i class="fas fa-download"></i> Download
     </button>
+    <!-- Load Button -->
+    <form id="load-form" method="post">
+       {% comment %} {% csrf_token %} {% endcomment %}
+        <button type="submit" class="btn btn-secondary load-btn
+            {% if BOOTSTRAP_VERSION|first == "4" %}float-right{% elif BOOTSTRAP_VERSION|first == "5"  %}float-end{% endif %}
+            {% if BOOTSTRAP_VERSION|first == "4" %}mr-1{% elif BOOTSTRAP_VERSION|first == "5"  %}me-1{% endif %}">
+            <i class="fas fa-upload"></i> Load      
+        </button>
+    </form>
     {% endif %}
     {% if data.share_pid_button %}
         {% include 'core_linked_records_app/user/sharing/data_detail/button.html' %}

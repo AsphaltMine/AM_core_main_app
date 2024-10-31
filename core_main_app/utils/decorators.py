@@ -36,7 +36,7 @@ def add_default_group(sender, **kwargs):
     user = kwargs["instance"]
     # If it's a creation
     if kwargs["created"]:
-        group = Group.objects.get(name=rights.DEFAULT_GROUP)
+        group = Group.objects.get(name=rights.READ_ONLY_GROUP)
         user.groups.add(group)
         user.save()
 

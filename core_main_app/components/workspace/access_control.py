@@ -71,6 +71,25 @@ def is_workspace_owner(func, workspace, user):
     return func(workspace, user)
 
 
+def is_workspace_owner_to_rename(func, workspace, new_title, user):
+    """Check if the user is the owner of the workspace to rename it.
+
+    Args:
+        func:
+        workspace:
+        new_title:
+        user:
+
+    Returns:
+
+    """
+    if user.is_superuser:
+        return func(workspace, new_title, user)
+
+    _check_is_owner_workspace(workspace, user)
+    return func(workspace, new_title, user)
+
+
 def can_delete_workspace(func, workspace, user):
     """Can user delete a workspace.
 

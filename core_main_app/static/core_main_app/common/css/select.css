@@ -1,18 +1,18 @@
 /** Checkbox Select Multiple CSS **/
 
 .multiple-columns {
-  columns: 120px 4;
+  columns: 220px 2;
   list-style: none;
 }
 
 .double-columns {
-  columns: 270px 2;
+  columns: 220px 2;
   list-style: none;
 }
 
 .multiple-select-form{
-    height :200px;
-    overflow-y: scroll;
+    max-height: 320px;
+    overflow-y: auto;
 }
 
 .multiple-select-form:hover{

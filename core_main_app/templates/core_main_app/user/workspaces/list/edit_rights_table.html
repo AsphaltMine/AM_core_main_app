@@ -3,9 +3,8 @@
             <thead>
                 <tr>
                     <th>{% if group == 'group' %}Name {%else%}Username{% endif %}</th>
-                    <th>Can read</th>
-                    <th>Can write</th>
-                    <th>Actions</th>
+                    <th>Write access</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -14,22 +13,14 @@
                         <td>{{ object.object_name }}</td>
                         <td>
                             <label class="switch">
-                                <input {%if data.is_public%} disabled {% endif %} id="btn-read-{{group}}-{{object.object_id}}" autocomplete="off" type="checkbox" {% if object.can_read %} checked{% endif %}>
-                                <span class="slider"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <label class="switch">
                                 <input {%if data.is_global%} disabled {% endif %} id="btn-write-{{group}}-{{object.object_id}}" autocomplete="off" type="checkbox" {% if object.can_write %} checked{% endif %}>
                                 <span class="slider"></span>
                             </label>
                         </td>
                         <td>
-                            {% if not data.is_public %}
-                                <a class="btn btn-secondary remove-{{group}}-btn">
-                                    <i class="fas fa-edit"></i> Remove {{group}} access
-                                </a>
-                            {% endif %}
+                            <a class="btn btn-secondary am-remove-access-btn remove-{{group}}-btn">
+                                <i class="fas fa-trash-alt"></i> Remove
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

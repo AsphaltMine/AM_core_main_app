@@ -11,34 +11,15 @@
 </div>
 <div id="group-rights">
     <p class="my-3">
-        Select all groups you want to give rights to the workspace:
+        Select all groups you want to give view access to the workspace:
     </p>
     <form id="add-group-form" class="multiple-select-form p-2 my-3">
     </form>
-    <div id="list-rights">
-        <div class="row m-2">
-            <div class="col-sm-1 mx-1">
-                <label class="switch">
-                    <input type="checkbox" id="read_group">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="col">
-                Read
-            </div>
-        </div>
-        <div class="row m-2">
-            <div class="col-sm-1 mx-1">
-                <label class="switch">
-                    <input type="checkbox" id="write_group">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="col">
-                Write
-            </div>
-        </div>
-    </div>
+    <label class="am-option-checkbox">
+        <input type="checkbox" id="write_group">
+        <span>Write access</span>
+    </label>
+    <p class="am-option-hint">Selected groups can always view this workspace. Enable write access to also let them add or edit records.</p>
 </div>
 {% endblock %}
 

@@ -1,41 +1,57 @@
 {% extends 'core_main_app/_render/admin/theme/tools/box.html' %}
 
 {% block box_title %}
-<span>Edit access to workspace: {{data.workspace.title}}</span>
+<span class="am-compact-title">Edit access to workspace: {{data.workspace.title}}</span>
+{% if data.is_public %}<span class="am-public-badge">Public</span>{% endif %}
 {% endblock %}
 
 {% block box_tools %}
-{% if not data.is_public %}
     <a class="btn btn-secondary add-user-btn">
-        <i class="fas fa-file-alt"></i> Add users
+        <i class="fas fa-user-plus"></i> Add users
     </a>
     <a class="btn btn-secondary add-group-btn">
-        <i class="fas fa-file-alt"></i> Add groups
+        <i class="fas fa-users"></i> Add groups
     </a>
-{% endif %}
 <a href="#" class="btn btn-secondary back-to-previous">
          <i class="fas fa-arrow-left"></i> Previous page
 </a>
 {% endblock %}
 
 {% block box_body %}
-<br/>
-    <!--FIXME: put back the tab -->
-    <h4>Users:</h4>
+<div class="am-rights-columns">
+<div class="am-rights-section">
+    <h4 class="am-rights-section-title">
+        <i class="fas fa-user"></i> Users {% if data.is_public %}with write access{% endif %}
+    </h4>
     {% if data.user_data %}
         {% include data.template with objects=data.user_data group="user" %}
     {% else %}
-    <div class="empty-table">
+    <div class="am-empty-state">
+        <i class="fas fa-user-slash"></i>
+        {% if data.is_public %}
+        No users have write access to '{{ data.workspace.title }}'.
+        {% else %}
         No users have access to '{{ data.workspace.title }}'.
+        {% endif %}
     </div>
     {% endif %}
-<br/>
-    <h4>Groups:</h4>
+</div>
+<div class="am-rights-section">
+    <h4 class="am-rights-section-title">
+        <i class="fas fa-layer-group"></i> Groups {% if data.is_public %}with write access{% endif %}
+    </h4>
     {% if data.group_data %}
         {% include data.template with objects=data.group_data group="group" %}
     {%else%}
-      <div class="empty-table">
+      <div class="am-empty-state">
+        <i class="fas fa-user-slash"></i>
+        {% if data.is_public %}
+        No groups have write access to '{{ data.workspace.title }}'.
+        {% else %}
         No groups have access to '{{ data.workspace.title }}'.
+        {% endif %}
       </div>
     {% endif %}
+</div>
+</div>
 {% endblock %}

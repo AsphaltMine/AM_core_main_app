@@ -3,7 +3,7 @@
  */
 setPrivateWorkspace = function() {
     $("#banner_errors").hide();
-    var $recordRow = $(this).parent().parent();
+    var $recordRow = $(this).closest('tr');
     $('.'+functional_object+'-id').val($recordRow.attr("objectid"));
     $("#private-workspace-modal").modal("show");
 };

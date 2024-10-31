@@ -16,7 +16,7 @@ from core_main_app.views.common import (
 from core_main_app.views.user import views as user_views, ajax as user_ajax
 
 urlpatterns = [
-    re_path(r"^$", user_views.homepage, name="core_main_app_homepage"),
+    #re_path(r"^$", user_views.homepage, name="core_main_app_homepage"),
     re_path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     re_path(
         "docs/api/",
@@ -100,9 +100,9 @@ urlpatterns = [
         name="core_main_assign_data_workspace",
     ),
     re_path(
-        r"^add-user-form",
-        user_ajax.load_add_user_form,
-        name="core_main_edit_rights_users_form",
+        r"^search-users-for-workspace",
+        user_ajax.search_users_for_workspace,
+        name="core_main_search_users_for_workspace",
     ),
     re_path(
         r"^add-user-right-to-workspace",

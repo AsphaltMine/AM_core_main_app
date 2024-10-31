@@ -1,75 +1,105 @@
 .toast-container {
-    z-index: 1500;
+    z-index: 2000;
     position: fixed;
-    top: 2.5rem;
-    right: 1rem;
+    /* Clears the fixed top navbar (~50px) with room to spare, instead of
+       overlapping it. */
+    top: 5rem;
+    right: 1.25rem;
 
     display: flex;
     flex-direction: column;
     align-items: end;
+    gap: 0.6rem;
 }
 .toast {
     opacity: 1;
-    border-radius: 0.25rem;
-    border-style: none;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     max-width: 100%;
-    font-size: 1.2rem;
+    font-size: 1rem;
 
     flex-basis: fit-content;
     width: fit-content;
+    animation: toast-slide-in 0.25s ease-out;
+}
+@keyframes toast-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 .toast > .toast-body {
     display: flex;
     flex-direction: row;
-
     align-items: center;
+    padding: 0.85rem 1.1rem;
+    gap: 0.65rem;
+}
+.toast > .toast-body > .toast-icon {
+    font-size: 1.1rem;
+    display: flex;
 }
 .toast > .toast-body > .toast-text {
     width: 100%;
+    font-weight: 500;
 }
 .toast > .toast-body > button {
     display: flex;
     background: none;
-    font-size: 0.9rem;
+    border: none;
+    font-size: 0.85rem;
+    opacity: 0.6;
+    padding: 0;
+    margin-left: 0.4rem;
+}
+.toast > .toast-body > button:hover {
     opacity: 1;
 }
 .toast-info {
-    color: #3a87ad;
-    background-color: #d9edf7;
+    color: #1f5f7a;
+    background-color: #eaf6fb;
+    border-left: 4px solid #3a87ad;
 }
 .toast-info > .toast-body > button {
-    opacity: 1;
-    color: #3a87ad;
+    color: #1f5f7a;
 }
 .toast-success {
-    color: #468846;
-    background-color: #dff0d8;
+    /* Matches the app's own teal accent (--am-accent: #3CACA8, see
+       list.css / Prediction.css / Visualization css) instead of a generic
+       green that doesn't appear anywhere else in the UI. */
+    color: #1f5854;
+    background-color: #eaf7f6;
+    border-left: 4px solid #3CACA8;
 }
 .toast-success > .toast-body > button {
-    opacity: 1;
-    color: #468846;
+    color: #1f5854;
 }
 .toast-warning {
-    color: #c09853;
-    background-color: #fcf8e3;
+    color: #7a5c00;
+    background-color: #fffaeb;
+    border-left: 4px solid #e0a800;
 }
 .toast-warning > .toast-body > button {
-    opacity: 1;
-    color: #c09853;
+    color: #7a5c00;
 }
 .toast-danger {
-    color: #b94a48;
-    background-color: #f2dede;
+    color: #7a2320;
+    background-color: #fdeeee;
+    border-left: 4px solid #d9534f;
 }
 .toast-danger > .toast-body > button {
-    opacity: 1;
-    color: #b94a48;
+    color: #7a2320;
 }
 .toast-default {
-    color: #666;
-    background-color: #f6f6f6;
+    color: #444;
+    background-color: #f7f7f7;
+    border-left: 4px solid #999;
 }
 .toast-default > .toast-body > button {
-    opacity: 1;
-    color: #666;
+    color: #444;
 }

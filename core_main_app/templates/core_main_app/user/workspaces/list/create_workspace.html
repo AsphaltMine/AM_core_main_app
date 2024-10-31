@@ -6,24 +6,18 @@
 
 {% block modal_body %}
     <div class="alert alert-danger" id="banner_errors" style="display: none;">
-        <h4>
-            <i class="fas fa-exclamation-circle"></i>
-            An error occured while creating the workspace!
-        </h4>
-        <div id="create_workspace_errors"></div>
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="create_workspace_errors"></span>
     </div>
     <div>
         <input type="hidden" class="{{ data.document }}-id"/>
         <p class="m-0">Please enter the name of the new workspace.</p>
     </div>
-    <div class="mt-2">
+    <div class="mt-3">
         {% for field in data.workspace_form %}
-            <div class="d-flex flex-row mx-4">
-                <div class="d-flex align-items-center justify-content-center"
-                     style="width:30%">
-                    {{ field.label_tag }}
-                </div>
-                <div class="{% if BOOTSTRAP_VERSION|first == "4" %}ml-2{% elif BOOTSTRAP_VERSION|first == "5"  %}ms-2{% endif %} d-flex align-items-center" style="width:90%">{{ field }}</div>
+            <div class="am-modal-field">
+                {{ field.label_tag }}
+                {{ field }}
             </div>
         {% endfor %}
     </div>

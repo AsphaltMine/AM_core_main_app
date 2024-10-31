@@ -7,6 +7,8 @@ class CustomXslTransformationAdmin(admin.ModelAdmin):
     """CustomXslTransformationAdmin"""
 
     readonly_fields = ["checksum", "file"]
+    list_display = ["name", "filename"]
+    search_fields = ["name", "filename"]
 
     def has_add_permission(self, request, obj=None):
         """Prevent from manually adding XslTransformation"""

@@ -104,28 +104,28 @@ def get_auth_urls():
         urlpatterns.append(
             re_path(
                 "password_reset/$",
-                auth_views.PasswordResetView.as_view(),
+                user_views.PasswordResetView.as_view(),
                 name="password_reset",
             )
         )
         urlpatterns.append(
             re_path(
                 "password_reset/done/$",
-                auth_views.PasswordResetDoneView.as_view(),
+                user_views.PasswordResetDoneView.as_view(),
                 name="password_reset_done",
             )
         )
         urlpatterns.append(
             re_path(
-                r"^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
-                auth_views.PasswordResetConfirmView.as_view(),
+                r"^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z_\-]+)/$",
+                user_views.PasswordResetConfirmView.as_view(),
                 name="password_reset_confirm",
             )
         )
         urlpatterns.append(
             re_path(
                 r"^reset/done/$",
-                auth_views.PasswordResetCompleteView.as_view(),
+                user_views.PasswordResetCompleteView.as_view(),
                 name="password_reset_complete",
             )
         )

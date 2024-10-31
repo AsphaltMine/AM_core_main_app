@@ -125,24 +125,25 @@ ul.tree ul li:last-child:before {
 }
 				
 
-.collapse{
-	cursor: pointer;	
+.collapse, .expand {
+	cursor: pointer;
 	width: 14px;
 	height: 12px;
 	margin-left: 2px;
 	margin-right: 2px;
-	background-image: url("../img/collapse.png");
-	background-repeat: no-repeat;	
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #3CACA8;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 1;
 }
 
-.expand{
-	cursor: pointer;	
-	width: 14px;
-	height: 12px;
-	margin-left: 2px;
-	margin-right: 2px;
-	background-image: url("../img/expand.png");
-	background-repeat: no-repeat;	
-	display: inline-block;
+.collapse::before {
+	content: "\2212";
+}
+
+.expand::before {
+	content: "+";
 }

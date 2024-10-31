@@ -87,7 +87,7 @@ LOCK_OBJECT_TTL = getattr(settings, "LOCK_OBJECT_TTL", 600)  # 10 min
 """
 
 # Results per page for paginator
-RESULTS_PER_PAGE = getattr(settings, "RESULTS_PER_PAGE", 10)
+RESULTS_PER_PAGE = getattr(settings, "RESULTS_PER_PAGE", 50)
 """ :py:class:`int`: Results per page.
 """
 

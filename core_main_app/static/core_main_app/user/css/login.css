@@ -1,3 +1,128 @@
 .form-login {
     width: 100%;
+    /*margin-left: auto;
+    margin-right: auto;*/
+}
+
+/* Login page sits directly on the site background instead of inside
+   the big shared #content panel -- avoids stacking two white boxes. */
+#content:has(.am-login-page) {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 40px 0;
+}
+.am-login-wrap {
+  display: flex;
+  justify-content: center;
+}
+.am-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.1);
+  border: 1px solid #e2e8f0;
+  padding: 40px 34px 34px;
+  text-align: center;
+}
+.am-login-logo {
+  width: 64px;
+  height: auto;
+  margin-bottom: 10px;
+}
+.am-login-title {
+  margin: 0 0 4px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #3CACA8;
+}
+.am-login-subtitle {
+  margin: 0 0 22px;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+.am-login-subtitle--note {
+  margin-top: -16px;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+.am-required {
+  color: #dc3545;
+}
+.am-login-form {
+  text-align: left;
+}
+.am-login-field {
+  margin-bottom: 16px;
+}
+.am-login-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.92rem;
+}
+.am-login-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 2px solid #b2c2d6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.am-login-field input:focus {
+  outline: none;
+  border-color: #3CACA8;
+  box-shadow: 0 0 0 3px rgba(60, 172, 168, 0.18);
+}
+.am-login-submit {
+  display: block;
+  width: 100%;
+  margin: 6px 0 20px;
+  padding: 12px 0;
+  background: linear-gradient(90deg, #3CACA8, #5ABCB8);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.am-login-submit:hover, .am-login-submit:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(60, 172, 168, 0.35);
+}
+.am-login-links {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.am-login-links--stacked {
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.am-login-links a {
+  color: #3CACA8;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.am-login-links a:hover {
+  color: #287371;
+  text-decoration: underline;
+}
+.password-help ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: left;
+}
+.password-help li {
+  margin-bottom: 0.1rem;
 }

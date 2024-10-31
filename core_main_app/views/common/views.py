@@ -128,16 +128,19 @@ class EditWorkspaceRights(CommonView):
 
         try:
             # Users
-            users_read_workspace = (
-                workspace_api.get_list_user_can_read_workspace(
-                    workspace, request.user
-                )
-            )
             users_write_workspace = (
                 workspace_api.get_list_user_can_write_workspace(
                     workspace, request.user
                 )
             )
+            if workspace_api.is_workspace_public(workspace):
+                users_read_workspace = []
+            else:
+                users_read_workspace = (
+                    workspace_api.get_list_user_can_read_workspace(
+                        workspace, request.user
+                    )
+                )
 
             users_access_workspace = list(
                 set(users_read_workspace + users_write_workspace)
@@ -149,7 +152,8 @@ class EditWorkspaceRights(CommonView):
                         {
                             "object_id": user.id,
                             "object_name": user.username,
-                            "can_read": user in users_read_workspace,
+                            "can_read": user in users_read_workspace
+                            or workspace_api.is_workspace_public(workspace),
                             "can_write": user in users_write_workspace,
                         }
                     )
@@ -158,16 +162,19 @@ class EditWorkspaceRights(CommonView):
 
         try:
             # Groups
-            groups_read_workspace = (
-                workspace_api.get_list_group_can_read_workspace(
-                    workspace, request.user
-                )
-            )
             groups_write_workspace = (
                 workspace_api.get_list_group_can_write_workspace(
                     workspace, request.user
                 )
             )
+            if workspace_api.is_workspace_public(workspace):
+                groups_read_workspace = []
+            else:
+                groups_read_workspace = (
+                    workspace_api.get_list_group_can_read_workspace(
+                        workspace, request.user
+                    )
+                )
 
             groups_access_workspace = list(
                 set(groups_read_workspace + groups_write_workspace)
@@ -185,7 +192,8 @@ class EditWorkspaceRights(CommonView):
                     {
                         "object_id": group.id,
                         "object_name": group.name,
-                        "can_read": group in groups_read_workspace,
+                        "can_read": group in groups_read_workspace
+                        or workspace_api.is_workspace_public(workspace),
                         "can_write": group in groups_write_workspace,
                     }
                 )
@@ -210,6 +218,7 @@ class EditWorkspaceRights(CommonView):
             "css": [
                 "core_main_app/common/css/switch.css",
                 "core_main_app/common/css/select.css",
+                "core_main_app/common/css/user_search.css",
             ],
             "js": [
                 {

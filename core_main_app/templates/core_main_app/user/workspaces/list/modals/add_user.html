@@ -11,35 +11,21 @@
 </div>
 <div id="user-rights">
     <p class="my-3">
-       Select all users you want to give rights to the workspace:
+       Search for users to give them view access to the workspace:
     </p>
 
-    <form id="add-user-form" class="multiple-select-form p-2 my-3" method="post">
-    </form>
-    <div id="list-rights">
-        <div class="row m-2">
-            <div class="col-sm-1 mx-1">
-                <label class="switch">
-                    <input type="checkbox" id="read">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="col">
-                Read
-            </div>
-        </div>
-        <div class="row m-2">
-            <div class="col-sm-1 mx-1">
-                <label class="switch">
-                    <input type="checkbox" id="write">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="col">
-                Write
-            </div>
-        </div>
+    <div id="add-user-tags" class="am-user-tag-wrapper">
+        <div id="add-user-chips" class="am-user-tag-chips"></div>
+        <input type="text" id="add-user-search" class="am-user-tag-search" placeholder="Search users..." autocomplete="off">
+        <div id="add-user-options" class="am-user-tag-options" style="display:none;"></div>
     </div>
+    <div id="add-user-errors" style="color:red;"></div>
+
+    <label class="am-option-checkbox">
+        <input type="checkbox" id="write">
+        <span>Write access</span>
+    </label>
+    <p class="am-option-hint">Selected users can always view this workspace. Enable write access to also let them add or edit records.</p>
 </div>
 {% endblock %}
 

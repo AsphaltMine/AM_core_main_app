@@ -66,12 +66,14 @@ def _create_workspace(title, owner_id=None, is_public=False):
     )
 
 
-def set_title(workspace, new_title):
+@access_control(workspace_api_access_control.is_workspace_owner_to_rename)
+def set_title(workspace, new_title, user):
     """Set the workspace's title.
 
     Args:
         workspace
         new_title
+        user
 
     Returns:
     """

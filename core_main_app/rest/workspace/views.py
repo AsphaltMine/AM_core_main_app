@@ -12,6 +12,7 @@ from core_main_app.commons import exceptions
 from core_main_app.components.group import api as group_api
 from core_main_app.components.user import api as user_api
 from core_main_app.components.workspace import api as workspace_api
+from core_main_app.permissions import rights
 from core_main_app.rest.group.serializers import GroupSerializer
 from core_main_app.rest.user.serializers import UserSerializer
 from core_main_app.rest.workspace.serializers import WorkspaceSerializer
@@ -77,6 +78,12 @@ class WorkspaceList(APIView):
               content: Internal server error
         """
         try:
+            if not request.user.is_superuser and not request.user.has_perm(
+                f"core_main_app.{rights.PUBLISH_DATA}"
+            ):
+                content = {"message": "Insufficient permissions."}
+                return Response(content, status=status.HTTP_403_FORBIDDEN)
+
             # Build serializer
             serializer = self.serializer(data=request.data)
 
@@ -320,6 +327,49 @@ def set_workspace_public(request, pk):
         workspace_api.set_workspace_public(workspace_object, request.user)
 
         # Return response
+        return Response(status=status.HTTP_200_OK)
+    except exceptions.DoesNotExist:
+        content = {"message": "Workspace not found."}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
+    except AccessControlError as ace:
+        content = {"message": str(ace)}
+        return Response(content, status=status.HTTP_403_FORBIDDEN)
+    except Exception as api_exception:
+        content = {"message": str(api_exception)}
+        return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["PATCH"])
+@permission_classes((IsAuthenticated,))
+def set_workspace_title(request, pk):
+    """Rename the workspace
+
+    Args:
+
+        request: HTTP request
+        pk: ObjectId
+
+    Returns:
+
+        - code: 200
+          content: None
+        - code: 400
+          content: Bad request
+        - code: 403
+          content: Authentication error
+        - code: 404
+          content: Object was not found
+        - code: 500
+          content: Internal server error
+    """
+    new_title = request.data.get("title", "").strip()
+    if not new_title:
+        content = {"message": "Please provide a title."}
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        workspace_object = workspace_api.get_by_id(pk)
+        workspace_api.set_title(workspace_object, new_title, request.user)
         return Response(status=status.HTTP_200_OK)
     except exceptions.DoesNotExist:
         content = {"message": "Workspace not found."}

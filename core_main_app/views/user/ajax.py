@@ -31,7 +31,6 @@ from core_main_app.templatetags.xsl_transform_tag import (
 from core_main_app.utils import group as group_utils
 from core_main_app.views.user.forms import (
     ChangeWorkspaceForm,
-    UserRightForm,
     GroupRightForm,
     BlobMetadataForm,
     BlobFileForm,
@@ -62,12 +61,31 @@ class LoadFormChangeWorkspace(View):
 
         is_administration = request.POST.get("administration", False) == "True"
 
+        # Preselect the document's current workspace, if it can be resolved.
+        # The document type isn't sent by the caller, so try both APIs -
+        # this endpoint is shared by the data and blob "Change workspace"
+        # actions.
+        document_id = request.POST.get("document_id")
+        current_workspace_id = None
+        if document_id:
+            document = None
+            try:
+                document = data_api.get_by_id(document_id, request.user)
+            except Exception:
+                try:
+                    document = blob_api.get_by_id(document_id, request.user)
+                except Exception:
+                    document = None
+            if document is not None and document.workspace is not None:
+                current_workspace_id = document.workspace.id
+
         try:
             form = ChangeWorkspaceForm(
                 request.user,
                 list(),
                 is_administration,
                 self.show_global_workspace,
+                current_workspace_id,
             )
         except DoesNotExist as dne:
             return HttpResponseBadRequest(escape(str(dne)))
@@ -89,9 +107,12 @@ class LoadFormChangeWorkspace(View):
         )
 
 
+USER_SEARCH_RESULTS_LIMIT = 20
+
+
 @login_required
-def load_add_user_form(request):
-    """Load the form to list the users with no access to the workspace.
+def search_users_for_workspace(request):
+    """Search users with no access to the workspace, matching the given query.
 
     Args:
         request:
@@ -99,6 +120,7 @@ def load_add_user_form(request):
     Returns:
     """
     workspace_id = request.POST.get("workspace_id", None)
+    query = request.POST.get("query", "").strip()
     try:
         workspace = workspace_api.get_by_id(str(workspace_id))
     except exceptions.ModelError:
@@ -107,25 +129,18 @@ def load_add_user_form(request):
         return HttpResponseBadRequest("An unexpected error occurred.")
 
     try:
-        # We retrieve all users with no access
-        users_with_no_access = list(
+        users_with_no_access = (
             workspace_api.get_list_user_with_no_access_workspace(
                 workspace, request.user
             )
+            .exclude(id=workspace.owner)
+            .filter(username__icontains=query)
+            .order_by("username")[:USER_SEARCH_RESULTS_LIMIT]
         )
-
-        # We remove the owner of the workspace
-        if len(users_with_no_access) > 0:
-            users_with_no_access.remove(
-                user_api.get_user_by_id(workspace.owner)
-            )
-
-        if len(users_with_no_access) == 0:
-            return HttpResponseBadRequest(
-                "There are no users that can be added."
-            )
-
-        form = UserRightForm(users_with_no_access)
+        results = [
+            {"id": user.id, "username": user.username}
+            for user in users_with_no_access
+        ]
     except AccessControlError as ace:
         return HttpResponseBadRequest(escape(str(ace)))
     except DoesNotExist as dne:
@@ -133,18 +148,8 @@ def load_add_user_form(request):
     except Exception:
         return HttpResponseBadRequest("Something wrong happened.")
 
-    context = {"add_user_form": form}
-
     return HttpResponse(
-        json.dumps(
-            {
-                "form": loader.render_to_string(
-                    "core_main_app/user/workspaces/list/modals/add_user_form.html",
-                    context,
-                )
-            }
-        ),
-        "application/javascript",
+        json.dumps({"users": results}), "application/javascript"
     )
 
 
@@ -159,23 +164,17 @@ def add_user_right_to_workspace(request):
     """
     workspace_id = request.POST.get("workspace_id", None)
     users_ids = request.POST.getlist("users_id[]", [])
-    is_read_checked = request.POST.get("read", None) == "true"
     is_write_checked = request.POST.get("write", None) == "true"
 
     if len(users_ids) == 0:
         return HttpResponseBadRequest("You need to select at least one user.")
-    if not is_read_checked and not is_write_checked:
-        return HttpResponseBadRequest(
-            "You need to select at least one permission (read and/or write)."
-        )
 
     try:
         workspace = workspace_api.get_by_id(str(workspace_id))
         for user in user_api.get_all_users_by_list_id(users_ids):
-            if is_read_checked:
-                workspace_api.add_user_read_access_to_workspace(
-                    workspace, user, request.user
-                )
+            workspace_api.add_user_read_access_to_workspace(
+                workspace, user, request.user
+            )
             if is_write_checked:
                 workspace_api.add_user_write_access_to_workspace(
                     workspace, user, request.user
@@ -251,8 +250,14 @@ def _switch_user_right(user_id, action, value, workspace, request_user):
             workspace_api.remove_user_read_access_to_workspace(
                 workspace, user, request_user
             )
+            workspace_api.remove_user_write_access_to_workspace(
+                workspace, user, request_user
+            )
     elif action == ACTION_WRITE:
         if value:
+            workspace_api.add_user_read_access_to_workspace(
+                workspace, user, request_user
+            )
             workspace_api.add_user_write_access_to_workspace(
                 workspace, user, request_user
             )
@@ -285,8 +290,14 @@ def _switch_group_right(group_id, action, value, workspace, request_user):
             workspace_api.remove_group_read_access_to_workspace(
                 workspace, group, request_user
             )
+            workspace_api.remove_group_write_access_to_workspace(
+                workspace, group, request_user
+            )
     elif action == ACTION_WRITE:
         if value:
+            workspace_api.add_group_read_access_to_workspace(
+                workspace, group, request_user
+            )
             workspace_api.add_group_write_access_to_workspace(
                 workspace, group, request_user
             )
@@ -440,23 +451,17 @@ def add_group_right_to_workspace(request):
     """
     workspace_id = request.POST.get("workspace_id", None)
     groups_ids = request.POST.getlist("groups_id[]", [])
-    is_read_checked = request.POST.get("read", None) == "true"
     is_write_checked = request.POST.get("write", None) == "true"
 
     if len(groups_ids) == 0:
         return HttpResponseBadRequest("You need to select at least one group.")
-    if not is_read_checked and not is_write_checked:
-        return HttpResponseBadRequest(
-            "You need to select at least one permission (read and/or write)."
-        )
 
     try:
         workspace = workspace_api.get_by_id(str(workspace_id))
         for group in group_api.get_all_groups_by_list_id(groups_ids):
-            if is_read_checked:
-                workspace_api.add_group_read_access_to_workspace(
-                    workspace, group, request.user
-                )
+            workspace_api.add_group_read_access_to_workspace(
+                workspace, group, request.user
+            )
             if is_write_checked:
                 workspace_api.add_group_write_access_to_workspace(
                     workspace, group, request.user
@@ -500,6 +505,11 @@ class AssignView(View):
             except Exception:
                 return HttpResponseBadRequest("Something wrong happened.")
 
+        # Each id is resolved and assigned independently, so a single
+        # stale/missing/inaccessible id in a bulk selection doesn't abort
+        # the move for the rest of the batch.
+        assigned_count = 0
+        skipped_count = 0
         for data_id in document_ids:
             try:
                 self.api.assign(
@@ -507,13 +517,27 @@ class AssignView(View):
                     workspace,
                     request.user,
                 )
-            except AccessControlError as ace:
-                return HttpResponseForbidden(escape(str(ace)))
+                assigned_count += 1
             except Exception:
-                return HttpResponseBadRequest("Something wrong happened.")
+                skipped_count += 1
 
+        if assigned_count == 0 and skipped_count > 0:
+            return HttpResponseBadRequest(
+                "Unable to move: the selected item(s) could not be found "
+                "or you don't have the rights to move them. Please "
+                "refresh the page and try again."
+            )
+
+        # No django `messages` added here: a large selection is sent as
+        # several chunked requests, and each one hitting this view would
+        # queue its own message - the client aggregates the
+        # assigned/skipped counts across all chunks into a single
+        # notification instead.
         return HttpResponse(
-            json.dumps({}), content_type="application/javascript"
+            json.dumps(
+                {"assigned": assigned_count, "skipped": skipped_count}
+            ),
+            content_type="application/javascript",
         )
 
 

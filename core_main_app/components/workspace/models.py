@@ -230,6 +230,21 @@ class Workspace(models.Model):
         """
         return self.is_public and self.owner is None
 
+    @property
+    def owner_name(self):
+        """Get owner name.
+
+        Returns:
+        """
+        if self.owner is None:
+            return None
+        from django.contrib.auth.models import User
+
+        try:
+            return User.objects.get(pk=self.owner).username
+        except User.DoesNotExist:
+            return None
+
     def __str__(self):
         """Workspace object as string
 

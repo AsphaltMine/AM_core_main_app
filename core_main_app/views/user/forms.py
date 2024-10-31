@@ -52,37 +52,6 @@ class GroupRightForm(forms.Form):
         self.fields["groups"].choices = self.GROUPS_OPTIONS
 
 
-class UserRightForm(forms.Form):
-    """
-    Form to select user to add rights.
-    """
-
-    users = forms.MultipleChoiceField(
-        label="",
-        required=True,
-        widget=forms.CheckboxSelectMultiple(
-            attrs={"class": "multiple-columns"}
-        ),
-    )
-    USERS_OPTIONS = []
-
-    def __init__(self, users_with_no_access):
-        self.USERS_OPTIONS = []
-
-        # We sort by username, case sensitive
-        sort_users = sorted(
-            users_with_no_access, key=lambda s: s.username.lower()
-        )
-
-        # We add them
-        for user in sort_users:
-            self.USERS_OPTIONS.append((user.id, user.username))
-
-        super().__init__()
-        self.fields["users"].choices = []
-        self.fields["users"].choices = self.USERS_OPTIONS
-
-
 class WorkspaceForm(forms.Form):
     """
     Form to create the workspace.
@@ -109,9 +78,10 @@ class ChangeWorkspaceForm(forms.Form):
         list_current_workspace=None,
         is_administration=False,
         show_global_workspace=False,
+        current_workspace_id=None,
     ):
         self.WORKSPACES_OPTIONS = []
-        self.WORKSPACES_OPTIONS.append(("", "-----------"))
+        self.WORKSPACES_OPTIONS.append(("", "No workspace"))
 
         if not list_current_workspace:
             list_current_workspace = []
@@ -172,6 +142,9 @@ class ChangeWorkspaceForm(forms.Form):
         super().__init__()
         self.fields["workspaces"].choices = []
         self.fields["workspaces"].choices = self.WORKSPACES_OPTIONS
+        self.fields["workspaces"].initial = (
+            str(current_workspace_id) if current_workspace_id else ""
+        )
 
         if settings.BOOTSTRAP_VERSION.startswith("4"):
             self.fields["workspaces"].widget.attrs["class"] = "form-control"

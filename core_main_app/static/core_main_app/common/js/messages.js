@@ -62,9 +62,35 @@ $(document).on("click", ".toast > .toast-body", function(event) {
 
 $(document).ready(function() {
     $(".toast-template").hide()
+
+    // A toast queued (via queuePendingToast) right before a page reload -
+    // e.g. a chunked bulk action's aggregated result, which can't just
+    // call notify() directly since the reload would wipe it out before
+    // it's seen. Shown once, then cleared.
+    try {
+        var pending = sessionStorage.getItem('am_pending_toast');
+        if (pending) {
+            sessionStorage.removeItem('am_pending_toast');
+            var data = JSON.parse(pending);
+            if (data && data.text) {
+                notify(data.text, data.severity || 'success');
+            }
+        }
+    } catch (e) {}
 })
 
 // Add the notify function as a JQuery function, mainly to not break existing code.
 $["notify"] = function(toastText, toastSeverity) {
     notify(toastText, toastSeverity);
+};
+
+/**
+ * Queue a toast to be shown right after the next page load, for callers
+ * that are about to call location.reload() and would otherwise lose an
+ * immediate notify() call.
+ */
+window.queuePendingToast = function(text, severity) {
+    try {
+        sessionStorage.setItem('am_pending_toast', JSON.stringify({ text: text, severity: severity || 'success' }));
+    } catch (e) {}
 };
